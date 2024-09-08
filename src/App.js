@@ -14,9 +14,12 @@ function App() {
     setIsLoading(true);
     const formData = new FormData();
     formData.append("audio_file", audioBlob, "recording.wav");
+    console.log("Tipo de archivo:", audioBlob.type);
+    console.log("Tamaño del archivo:", audioBlob.size); // Agrega esta línea
 
     try {
-      const response = await axios.post("https://bookish-barnacle-v6v69pvx7ww2p6r6-8000.app.github.dev/transcribe/", formData, {
+      // const response = await axios.post("https://bookish-barnacle-v6v69pvx7ww2p6r6-8000.app.github.dev/transcribe/", formData, {
+      const response = await axios.post("http://localhost:8000/transcribe/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const audioURL = response.data.audio_path;
