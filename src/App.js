@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import Recorder from "./components/Recorder";
 
 function App() {
   const [audioBlob, setAudioBlob] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Crea una referencia para el objeto Audio
+  const audioRef = useRef(null);
 
   const handleRecordingComplete = (blob) => {
     setAudioBlob(blob);
@@ -22,13 +25,28 @@ function App() {
       const response = await axios.post("http://localhost:8000/transcribe/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      const audioURL = response.data.audio_path;
-      const audio = new Audio(audioURL);
-      audio.play();
+      // Obtiene la ruta del archivo de audio de la respuesta
+      const audioPath = response.data.audio_path;
+
+      // Construye la URL completa del archivo de audio
+      const audioURL = `http://localhost:8000${audioPath}`; // Incluye el puerto del backend
+
+      // Crea un nuevo objeto Audio y guárdalo en la referencia
+      audioRef.current = new Audio(audioURL); 
+
+      audioRef.current.play();
     } catch (error) {
       console.error("Error al enviar el audio:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Función para detener la reproducción
+  const stopAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0; // Reinicia la posición del audio
     }
   };
 
@@ -38,6 +56,12 @@ function App() {
       {audioBlob && (
         <button onClick={sendAudio} disabled={isLoading}>
           Enviar audio
+        </button>
+      )}
+      {/* Agrega el botón para detener el audio */}
+      {audioRef.current && audioRef.current.currentTime > 0 && ( 
+        <button onClick={stopAudio}>
+          Detener audio
         </button>
       )}
       {isLoading && <p>Procesando...</p>}
