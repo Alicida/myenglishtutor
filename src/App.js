@@ -21,7 +21,7 @@ function App() {
     console.log("Tamaño del archivo:", audioBlob.size); // Agrega esta línea
 
     try {
-      // const response = await axios.post("https://bookish-barnacle-v6v69pvx7ww2p6r6-8000.app.github.dev/transcribe/", formData, {
+      //const response = await axios.post("https://myenglishtutor-271678354785.us-central1.run.app:8080/transcribe/", formData, {
       const response = await axios.post("http://localhost:8000/transcribe/", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
